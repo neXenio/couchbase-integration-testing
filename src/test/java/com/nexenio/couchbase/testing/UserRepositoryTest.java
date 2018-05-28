@@ -1,7 +1,8 @@
 package com.nexenio.couchbase.testing;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
+import java.util.Optional;
 import org.junit.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,24 +14,30 @@ public class UserRepositoryTest extends IntegrationTestSuite {
     @Autowired
     private UserRepository repository;
 
-    private User user;
-
-    @Before
-    public void setUp() {
-        user = new User(USER_ID, USER_NAME);
-    }
 
     @Test
     public void findById_succeeds() {
+        // arrange
+        User user = new User(USER_ID, USER_NAME);
         repository.getCouchbaseOperations().insert(user);
 
-        assertThat(repository.findById(USER_ID)).isPresent();
+        // act
+        Optional<User> result = repository.findById(USER_ID);
+
+        // assert
+        assertThat(result).isPresent();
     }
 
     @Test
-    public void findById_succeedsAgain() {
+    public void findById_succeeds_again() {
+        // arrange
+        User user = new User(USER_ID, USER_NAME);
         repository.getCouchbaseOperations().insert(user);
 
-        assertThat(repository.findById(USER_ID)).isPresent();
+        // act
+        Optional<User> result = repository.findById(USER_ID);
+
+        // assert
+        assertThat(result).isPresent();
     }
 }
