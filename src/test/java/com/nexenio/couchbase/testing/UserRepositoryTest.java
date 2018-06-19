@@ -2,25 +2,28 @@ package com.nexenio.couchbase.testing;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserRepositoryTest extends IntegrationTestSuite {
 
-    private final String USER_ID = "9e565cb9-ae43-4aa0-9f92-997595881577";
+    private final String USER_ID = UUID.randomUUID().toString();
     private final String USER_NAME = "John Doe";
 
     @Autowired
     private UserRepository repository;
 
+    @Before
+    public void setUp() {
+        User user = new User(USER_ID, USER_NAME);
+        repository.getCouchbaseOperations().insert(user);
+    }
 
     @Test
     public void findById_succeeds() {
-        // arrange
-        User user = new User(USER_ID, USER_NAME);
-        repository.getCouchbaseOperations().insert(user);
-
         // act
         Optional<User> result = repository.findById(USER_ID);
 
@@ -29,15 +32,12 @@ public class UserRepositoryTest extends IntegrationTestSuite {
     }
 
     @Test
-    public void findById_succeeds_again() {
-        // arrange
-        User user = new User(USER_ID, USER_NAME);
-        repository.getCouchbaseOperations().insert(user);
-
+    public void findByName_succeeds() {
         // act
-        Optional<User> result = repository.findById(USER_ID);
+        List<User> result = repository.findByName(USER_NAME);
 
         // assert
-        assertThat(result).isPresent();
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getId()).isEqualTo(USER_ID);
     }
 }

@@ -1,3 +1,6 @@
 spring:
   couchbase:
     bootstrap-hosts: localhost
+    bucket:
+      name: default
+      password: foobar
